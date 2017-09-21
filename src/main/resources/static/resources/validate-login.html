@@ -1,0 +1,106 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="validate-login">
+  <template>
+      <user-session session="{{session}}"></user-session>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+       
+    </style>
+
+      <div class="card">
+          <iron-ajax id="getQuoteAjax"
+                     auto
+                     url="{{endpoint}}"
+                     method="POST"
+                     handle-as="json"
+                     content-type="application/json"
+                     on-response="handleResponse"
+                     body='{
+    "username": "{{userid}}",    "password": "{{password}}",    "firstName": null,    "lastName": null,    "middleName": "Kalli",
+    "mobileNumber": null,    "email": null,    "address": null,
+    "ibanNum": null,    "curAmount": null,    "avalAmount": null}'
+                     last-response="{{quote}}"></iron-ajax>
+
+          <div>UserId:<paper-input type="text" lable="UserId" value="{{userid::input}}"></paper-input></div>
+          <div>Password:<paper-input type="password" lable="password" value="{{password::input}}"></paper-input></div>
+
+          <div><paper-button raised on-tap="tryLogin" class="primary">Login</paper-button></div>
+      </div>
+
+      <div class="card1">
+          <h1>Balance Summary</h1>
+          <table border="1">
+              <tr><th>iban id</th><th>User Name</th><th>Password</th><th>Balance</th><th></th></tr>
+              <tr><td>{{quote.ibanNum}}</td><td>{{quote.username}}</td><td>{{quote.password}}</td><td>{{quote.curAmount}}</td><td><paper-button raised on-tap="getQuote" class="primary">Refresh</paper-button></td></tr>
+          </table>
+
+      </div>
+
+  </template>
+
+  <script>
+    class MyView2 extends Polymer.Element {
+      static get is() { return 'validate-login'; }
+        static get properties() {
+        return {       
+             userid: String,      
+             password: String, 
+             session: {
+                userId: null,
+                userName: null
+              }
+        };
+      }
+
+         tryLogin() {
+             console.log(this.endpoint);
+             this.endpoint ="http://localhost:9099/login/validate";
+             console.log(this.endpoint);
+
+             this.$.getQuoteAjax.generateRequest();
+             console.log(this.quote);
+
+             window.sessionStorage.setItem("UserId",this.userid);
+             console.log("windows session id "+window.sessionStorage.getItem("UserId"));
+         }
+        handleResponse(e,response){
+          console.log("This is madhava testing the handleResponse");
+            console.log( e.detail.response);
+            try{
+               console.log("1" +e.detail.response.username);
+               if(e.detail.status==200){
+                    console.log("Status Success");
+                   window.location = 'success.html'
+                   } else {
+                   window.location = 'validate-login'
+               }
+
+            }catch(ex){
+
+            }
+            console.log("This is madhava testing the End");
+         }
+
+    }
+
+    window.customElements.define(MyView2.is, MyView2);
+  </script>
+</dom-module>

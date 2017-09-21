@@ -1,0 +1,33 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/main/resources/my-app.html",
+  "fragments": [
+    "src/main/resources/success-home.html",
+    "src/main/resources/validate-login.html",
+    "src/main/resources/secret-quotes.html",
+    "src/main/resources/not-found.html"
+  ],
+  "sources": [
+    "src/main/resources/**/*",
+    "images/**/*",
+    "bower.json"
+  ],
+  "extraDependencies": [
+    "manifest.json",
+    "bower_components/webcomponentsjs/*.js"
+  ],
+  "lint": {
+    "rules": ["polymer-2"]
+  },
+  "builds": [
+    {
+      "preset": "es5-bundled"
+    },
+    {
+      "preset": "es6-bundled"
+    },
+    {
+      "preset": "es6-unbundled"
+    }
+  ]
+}

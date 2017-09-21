@@ -1,0 +1,132 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="shared-styles.html">
+<style>
+    paper-button {
+        color: #fff;
+    }
+
+    paper-button.primary {
+        background: var(--primary-color);
+    }
+
+</style>
+
+<dom-module id="mail-home">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+
+                padding: 10px;
+            }
+            post-card {
+                margin-bottom: 30px;
+            }
+
+        </style>
+        <iron-ajax id="getTransactionAjax"
+                   true
+                   url="{{tranEndpoint}}";
+                   method="get"
+                   handle-as="json"
+                   last-response="{{transaction}}"
+                   debounce-duration="0"></iron-ajax>
+        <div class="card">
+            <div>Transaction Id<paper-input type="text" lable="TransactionId" value="{{inputValue::input}}"></paper-input></div>
+            <div><paper-button raised on-tap="getTransaction" class="primary">validate transaction</paper-button></div>
+        </div>
+       <!-- <table>
+            <tr><td> {{transaction.id}}</td></tr>
+            <tr><td> {{transaction.fromAccount}}</td></tr>
+            <tr><td> {{transaction.toAccount}}</td></tr>
+            <tr><td> {{transaction.trnsfAmount}}</td></tr>
+            <tr><td> {{transaction.fromOtp}}</td></tr>
+            <tr><td> {{transaction.toOtp}}</td></tr>
+            <tr><td> {{transaction.ibanNum}}</td></tr>
+            <tr><td> {{transaction.toAccountEmail}}</td></tr>
+            <tr><td> {{transaction.toAccountPhone}}</td></tr>
+            <tr><td> {{transaction.status}}</td></tr>
+        </table>-->
+
+        <div class="card">
+            {{transaction.id}} is validated
+
+        </div>
+
+        <div class="card">
+            <iron-ajax id="getValidateTransactionAjax"
+                       true
+                       url="{{tranValEndPoint}}"
+                       method="POST"
+                       handle-as="json"
+                       content-type="application/json"
+                       body='{ "id": "{{transaction.id}}",
+                        "fromAccount": "{{transaction.fromAccount}}",                        "toAccount": "{{transaction.toAccount}}",
+                        "trnsfAmount": "{{transaction.trnsfAmount}}",                        "fromOtp": "{{fromOtp}}",
+                        "toOtp": "{{toOtp}}",                        "ibanNum": "{{toIbanNum}}",
+                        "toAccountEmail": "{{transaction.toAccountEmail}}",
+                        "toAccountPhone": "{{transaction.toAccountPhone}}",
+                        "status": "{{transaction.status}}"
+                        }'
+                       last-response="{{valTransaction}}"></iron-ajax>
+
+            <div><h3>From User {{quote.username}}</h3></div>
+            <div></br></div>
+            <div>iBanNumber<paper-input type="text" lable="iBanNum" value="{{toIbanNum::input}}"></paper-input></div>
+            <div>To OTP<paper-input type="text" lable="toOtp" value="{{toOtp::input}}"></paper-input></div>
+            <div>From OTP<paper-input type="text" lable="FromOtp" value="{{fromOtp::input}}"></paper-input></div>
+            <div><paper-button raised on-tap="validateTransaction" class="primary">Transfer</paper-button></div>
+        </div>
+    </template>
+
+    <script>
+        class MyView1 extends Polymer.Element {
+            static get is() {
+                return 'mail-home';
+            }
+            static get properties() {
+                return {
+                    inputValue: String,
+                };
+            }
+            static get observers() {
+                return [
+                    '_handleResponse()'
+                ]
+            }
+            getTransaction() {
+                this.tranEndpoint ="http://localhost:9099/transaction/"+this.inputValue;
+                console.log(this.tranEndpoint);
+                this.$.getTransactionAjax.generateRequest();
+            }
+            _handleResponse(){
+                this.tranEndpoint ="http://localhost:9099/transaction/"+this.inputValue;
+                this.tranValEndPoint ="http://localhost:9099/transaction/validate";
+            }
+            validateTransaction() {
+
+                this.tranValEndPoint ="http://localhost:9099/transaction/validate";
+                console.log(this.tranEndPoint);
+                this.$.getValidateTransactionAjax.generateRequest();
+
+            }
+             show() {
+                return this.inputValue
+            }
+        }
+        window.customElements.define(MyView1.is, MyView1);
+    </script>
+</dom-module>

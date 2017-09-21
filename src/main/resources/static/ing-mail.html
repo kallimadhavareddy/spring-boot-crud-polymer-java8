@@ -1,0 +1,93 @@
+<link rel="import" href="../">
+<link rel="bower_components/polymer/polymer-element.html">
+<link rel="import" href="bower_components/polymer/polymer-element.html">
+<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="shared-styles.html">
+<dom-module id="ing-mail">
+    <!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
+    <script src="bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+
+    <!-- Load your application shell -->
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+    </style>
+      <script>
+
+      </script>
+    <h2>Hello [[prop1]]!</h2>
+      <style include="shared-styles">
+          :host {
+              display: block;
+
+              padding: 10px;
+          }
+          post-card {
+              margin-bottom: 30px;
+          }
+
+      </style>
+      <iron-ajax id="getQuoteAjax"
+                 auto
+                 url="{{endpoint}}"
+                 method="get"
+                 handle-as="json"
+                 last-response="{{quote}}"
+                 debounce-duration="0"></iron-ajax>
+      <div class="card">
+          <h1>Balance Summary</h1>
+          <table border="1">
+              <tr><th>iban id</th><th>User Name</th><th>Password</th><th>Balance</th><th></th></tr>
+              <tr><td>{{quote.ibanNum}}</td><td>{{quote.username}}</td><td>{{quote.password}}</td><td>{{quote.curAmount}}</td><td><paper-button raised on-tap="getQuote" class="primary">Refresh</paper-button></td></tr>
+          </table>
+
+      </div>
+
+      <div class="card">
+          <iron-ajax id="getTransactionAjax"
+                     auto
+                     url="{{tranEndPoint}}"
+                     method="POST"
+                     handle-as="json"
+                     content-type="application/json"
+                     body='{"id": null,    "fromAccount": "{{quote.username}}",    "toAccount": null,    "trnsfAmount": "{{amount}}",    "fromOtp": null,    "toOtp": null,    "ibanNum": null,    "toAccountEmail": "{{toemail}}",    "toAccountPhone": "{{tomobile}}",    "status": 0}'
+                     last-response="{{transaction}}"></iron-ajax>
+
+          <div><h3>From User {{quote.username}}</h3></div>
+          <div></br></div>
+          <div>Email Id<paper-input type="text" lable="UserEmail" value="{{toemail::input}}"></paper-input></div>
+          <div>Mobile No<paper-input type="text" lable="Mobile" value="{{tomobile::input}}"></paper-input></div>
+          <div>Amount<paper-input type="text" lable="Amount" value="{{amount::input}}"></paper-input></div>
+          <div><paper-button raised on-tap="createTransacion" class="primary">Initiate Fund Transfer</paper-button></div>
+      </div>
+  </template>
+
+  <script>
+    /**
+     * `ing-mail`
+     * Ing Mail Confirmation
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class IngMail extends Polymer.Element {
+      static get is() { return 'ing-mail'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'ing-mail'
+          }
+        };
+      }
+    }
+
+    window.customElements.define(IngMail.is, IngMail);
+  </script>
+</dom-module>
